@@ -1,0 +1,11 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {PRODUCTS,calculate,normalizeCart,filterProducts,validateCheckout,nextOrderId} from '../dist/model.js';
+test('catalog has unique IDs and a sold-out fixture',()=>{assert.equal(new Set(PRODUCTS.map(p=>p.id)).size,8);assert.equal(PRODUCTS.find(p=>p.id==='p06').stock,0);});
+test('search, category and stock filters combine; price sorting works',()=>{assert.equal(filterProducts({query:'lamp',inStock:true}).length,0);assert.deepEqual(filterProducts({category:'Desk',sort:'price-asc'}).map(p=>p.price),[1200,1800,5600]);assert.equal(filterProducts({query:'xyz-no-match'}).length,0);});
+test('cart sanitization rejects unknown and invalid rows and caps combined stock',()=>{assert.deepEqual(normalizeCart([{id:'p01',qty:6},{id:'p01',qty:5},{id:'p06',qty:1},{id:'bad',qty:1},{id:'p02',qty:-2}]),[{id:'p01',qty:8}]);});
+test('single mug totals include $6 shipping and 8% item tax',()=>{assert.deepEqual(calculate([{id:'p03',qty:1}]),{subtotal:1800,discount:0,shipping:600,tax:144,total:2544,count:1});});
+test('SAVE10 is case insensitive and shipping threshold follows discount',()=>{assert.deepEqual(calculate([{id:'p01',qty:1},{id:'p05',qty:1}],'save10'),{subtotal:10000,discount:1000,shipping:600,tax:720,total:10320,count:2});assert.equal(calculate([{id:'p01',qty:2}]).shipping,0);});
+test('empty cart has no fees',()=>{assert.equal(calculate([]).total,0);});
+test('order IDs advance past the newest retained history, including beyond 100 orders',()=>{assert.equal(nextOrderId([]),'TS-0001');const history=Array.from({length:101},(_,i)=>({id:`TS-${String(101-i).padStart(4,'0')}`})).slice(0,100);assert.equal(nextOrderId(history),'TS-0102');assert.equal(nextOrderId([{id:'TS-9999'}]),'TS-10000');});
+test('checkout rejects invalid fields and accepts a complete fixture',()=>{assert.equal(Object.keys(validateCheckout({})).length,7);assert.deepEqual(validateCheckout({name:'Alex Tester',email:'alex@example.com',address:'123 Test Street',city:'Taipei',postal:'100',country:'TW',agree:true}),{});assert.ok(validateCheckout({email:'bad@'}).email);});
