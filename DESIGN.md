@@ -1,5 +1,5 @@
 ---
-name: TestShop
+name: Goodfinds
 description: A quiet museum-shop catalog for repeatable demo shopping journeys.
 colors:
   evergreen: "#244b3d"
@@ -87,7 +87,7 @@ components:
     padding: "25px"
 ---
 
-# Design System: TestShop
+# Design System: Goodfinds
 
 ## Overview
 

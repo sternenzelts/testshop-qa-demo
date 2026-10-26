@@ -8,9 +8,9 @@ export const PRODUCTS = [
   {id:'p07',name:'Wireless Speaker',category:'Audio',price:7400,stock:4,color:'Black',image:'speaker',description:'Room-filling sound in an easy-to-place, portable format.'},
   {id:'p08',name:'Woven Handbag',category:'Everyday',price:2400,stock:15,color:'Amber',image:'tote',description:'A structured woven bag for market mornings and everyday errands.'}
 ];
-export const DEMO_EMAIL='demo@testshop.example';
-export const DEMO_PASSWORD='Test123!';
-export function nextOrderId(orders){const highest=orders.reduce((max,order)=>Math.max(max,Number(/^TS-(\d+)$/.exec(order.id)?.[1])||0),0);return `TS-${String(highest+1).padStart(4,'0')}`;}
+export const ACCOUNT_EMAIL='alex@goodfinds.example';
+export const ACCOUNT_PASSWORD='Test123!';
+export function nextOrderId(orders){const highest=orders.reduce((max,order)=>Math.max(max,Number(/^GF-(\d+)$/.exec(order.id)?.[1])||0),0);return `GF-${String(highest+1).padStart(4,'0')}`;}
 export const money=cents=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(cents/100);
 export function normalizeCart(cart){
   if(!Array.isArray(cart))return [];
@@ -37,11 +37,21 @@ export function filterProducts({query='',category='All',sort='featured',inStock=
 export function validateCheckout(data){
   const errors={};
   if(!String(data.name||'').trim())errors.name='Enter your full name.';
-  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(data.email||'').trim()))errors.email='Enter a valid email address.';
+  if(!isEmail(data.email))errors.email='Enter a valid email address.';
   if(String(data.address||'').trim().length<5)errors.address='Enter a street address with at least 5 characters.';
   if(!String(data.city||'').trim())errors.city='Enter your city.';
   if(!/^[A-Za-z0-9][A-Za-z0-9 -]{1,11}$/.test(String(data.postal||'').trim()))errors.postal='Enter a postal code with 2–12 letters or numbers.';
   if(!['US','GB','CA','TW','AU'].includes(data.country))errors.country='Choose a delivery country.';
-  if(!data.agree)errors.agree='Confirm that you understand this is a simulated order.';
+  if(!data.agree)errors.agree='Please accept the terms of sale.';
+  return errors;
+}
+export const isEmail=value=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value||'').trim());
+export const CONTACT_TOPICS={order:'An existing order',returns:'Returns and refunds',product:'A product question',other:'Something else'};
+export function validateContact(data){
+  const errors={};
+  if(!String(data.name||'').trim())errors.name='Enter your name.';
+  if(!isEmail(data.email))errors.email='Enter a valid email address.';
+  if(!Object.hasOwn(CONTACT_TOPICS,data.topic||''))errors.topic='Choose a topic.';
+  if(String(data.message||'').trim().length<10)errors.message='Write a message of at least 10 characters.';
   return errors;
 }

@@ -1,1 +1,1 @@
-{"name":"testshop-qa-demo","private":true,"type":"module","scripts":{"test":"node --test tests/model.test.mjs","start":"node server.mjs"}}
+{"name":"goodfinds-qa-target","private":true,"type":"module","scripts":{"test":"node --test tests/model.test.mjs","start":"node server.mjs"}}
