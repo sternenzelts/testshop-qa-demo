@@ -1,4 +1,4 @@
-import { type Page, type Locator, expect } from '@playwright/test';
+import { type Page, type Locator } from '@playwright/test';
 
 export class SignInPage {
   readonly page: Page;
@@ -6,6 +6,7 @@ export class SignInPage {
   readonly passwordInput: Locator;
   readonly signInButton: Locator;
   readonly alert: Locator;
+  readonly showPasswordButton: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -13,6 +14,7 @@ export class SignInPage {
     this.passwordInput = page.getByLabel('Password');
     this.signInButton = page.getByRole('button', { name: /sign in/i });
     this.alert = page.getByRole('alert');
+    this.showPasswordButton = page.getByRole('button', { name: /show password/i });
   }
 
   async goto() {
